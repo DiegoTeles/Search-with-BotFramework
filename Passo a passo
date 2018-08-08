@@ -1,0 +1,82 @@
+
+
+
+
+
+======================= OLÁ GALERA LINDA =D =======================
+
+Vamos aprender de maneira simples a criar um ChatBot usando NodeJS
+Aqui vamos fazer um passo a passo bem simples e começar nosso desenvolvimento 
+
+O que precisaremos? Instalar dependências, claro! Mas quais?
+
+Vamos lá!
+
+- editor de texto de sua preferência
+- botbuilder
+- restify
+
+"Lembrando estamos trabalhando com NodeJS e precisamos estar com a versão mais atualizada de preferencia
+para que nada dê errado no nosso desenvolvimento!"
+
+Depois de instalada nossas duas dependências, vamos ver para que elas servem!
+
+Bom, o bot botbuilder nada mais é que o nosso core do sistema, nela ficam a parte com as infos do bot
+Sejam elas session, messageID, e cases para um fluxo de navegação.
+
+O restify é uma estrutura de serviço Node.js otimizada para construir serviços Web RESTful, ele é quem faz nossas requisições, 
+se você conhece o Express (muito provavel que sim), o restify faz exatamente a mesma coisa que ele e é muito poderoso
+
+============================================================================================
+
+Passos:
+
+1. npm init
+2. npm i botbuilder restify --save
+3. Criar arquivo app.js para ser nosso router
+4. fazer as chamadas da nossa dependencia "botbuilder" 
+4.1 Code:  
+var builder = require('botbuilder');
+
+var connector = new builder.ConsoleConnector().listen();
+var bot = new builder.UniversalBot(connector, function (session) {
+    session.send("Você disse: %s", session.message.text);
+});
+
+5.  Start no Bot!
+        'node app.js'
+
+Nisso que fizemos nós já teremos um bot funcionando e você poderá testa-lo de duas maneiras, com o Bot Emulator ou pelo Console 
+Emulator
+
+Agora vamos fazer as chamadas do restify 
+
+npm i restify 
+
+vamos incorporar esse codigo no app.js
+
+var restify = require('restify');
+var builder = require('botbuilder');
+
+// Setup Restify Server
+var server = restify.createServer();
+server.listen(process.env.port || process.env.PORT || 3978, function () {
+   console.log('%s listening to %s', server.name, server.url); 
+});
+
+// Criamos um connector para o chatbot, aqui passartemos todas as informações
+var connector = new builder.ChatConnector({
+    appId: process.env.MicrosoftAppId,
+    appPassword: process.env.MicrosoftAppPassword
+});
+
+// Listen end point onde o usuario vai se conectar 
+server.post('/api/messages', connector.listen());
+
+// Recebemos a mensagem digitada e usamos o prefixo para responder com a mesma mensagem
+var bot = new builder.UniversalBot(connector, function (session) {
+    session.send("VOCÊ DISSE: %s", session.message.text);
+});
+
+
+============================================================================================
